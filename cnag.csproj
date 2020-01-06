@@ -5,9 +5,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>cnag</ToolCommandName>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Copyright>2020, Alexey Vyskubov alexey@hotmail.fi</Copyright>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+    <Title>CNAG: port-knocker utility</Title>
+    <Authors>avysk</Authors>
+    <Description>This tool allows to issue "port-knocking" sequence for communicating with programs such as knockd. The tool is very simple and can perform only TCP/SYN knocks.</Description>
+    <RepositoryUrl>https://github.com/avysk/cnag</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
   </PropertyGroup>
 
   <ItemGroup>
