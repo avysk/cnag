@@ -2,7 +2,9 @@
 
 ## Purpose
 
-This tool allows to issue "port-knocking" sequence for communicating with programs such as [knockd](https://zeroflux.org/projects/knock). The tool is very simple and can perform only TCP/SYN knocks.
+This tool allows to issue "port-knocking" sequence for communicating with
+programs such as [knockd](https://zeroflux.org/projects/knock). The tool is
+very simple and can perform only TCP/SYN knocks over IPv4.
 
 **While the tool is written in .NET Core, I have tested it only on Windows. It may or may not work under Linux and/or macOs.**
 

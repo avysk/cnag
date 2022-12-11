@@ -7,23 +7,32 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace cnag
 {
-    class Program
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class Program
     {
+        protected Program() {}
         public static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         [Option(Description = "Verbose messages; if option is not given, the tool is silent.")]
-        private bool Verbose { get; set; }
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        private static bool Verbose { get; }
 
         [Option(Description = "Delay between connection attempts, in ms. Default: 100 ms.")]
-        private Nullable<int> Delay { get; }
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        private static int? Delay { get; }
 
         [Argument(0, Description = "Host name to initiate connection attempts with")]
-        private string HostName { get; }
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        private static string HostName { get; }
 
         [Argument(1, Description = "port numbers to initiate connections to")]
-        private int[] Ports { get; }
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        private static int[] Ports { get; }
 
-        private int OnExecute()
+        // ReSharper disable once UnusedMember.Local
+#pragma warning disable S1144
+        private static int OnExecute()
+#pragma warning enable S1144
         {
             int delay = Delay ?? 100;
 
@@ -47,20 +56,20 @@ namespace cnag
             }
             catch (SocketException)
             {
-                Console.Error.WriteLine(String.Format("Cannot resolve '{0}'.", HostName));
+                Console.Error.WriteLine($"Cannot resolve '{HostName}'.");
                 return 1;
             }
 
             if (hosts.AddressList.Length == 0)
             {
-                Console.Error.WriteLine(String.Format("Cannot resolve '{0}'.", HostName));
+                Console.Error.WriteLine($"Cannot resolve '{HostName}'.");
                 return 1;
             }
 
             var address = hosts.AddressList[0];
             if (Verbose)
             {
-                Console.WriteLine(String.Format("Port-knocking {0}...", address));
+                Console.WriteLine($"Port-knocking {address}...");
             }
 
             foreach (var port in Ports)
@@ -69,9 +78,9 @@ namespace cnag
                 IPEndPoint endPoint = new IPEndPoint(hosts.AddressList[0], port);
                 if (Verbose)
                 {
-                    Console.WriteLine(String.Format("Knock-knock, port {0}!", port));
+                    Console.WriteLine($"Knock-knock, port {port}!");
                 }
-                sock.BeginConnect(endPoint, new AsyncCallback(res => { }), sock);
+                sock.BeginConnect(endPoint, res => { }, sock);
                 sock.Close();
                 Thread.CurrentThread.Join(delay);
             }
