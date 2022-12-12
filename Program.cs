@@ -1,91 +1,163 @@
+namespace Cnag;
+
 using System;
+using System.CommandLine;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Serilog;
+using Serilog.Core;
 
-using McMaster.Extensions.CommandLineUtils;
-
-namespace cnag
+/// <summary>
+/// The program itself.
+/// </summary>
+public static class Program
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    public class Program
+    /// <summary>
+    /// The entry point.
+    /// </summary>
+    /// <param name="args">Command-line options and arguments.</param>
+    public static void Main(string[] args)
     {
-        protected Program() {}
-        public static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+        Option<bool> verboseOption =
+            new("--verbose", "Produce verbose messages.");
 
-        [Option(Description = "Verbose messages; if option is not given, the tool is silent.")]
-        // ReSharper disable once UnassignedGetOnlyAutoProperty
-        private static bool Verbose { get; }
+        Option<bool> ipv4Option = new("--ipv4", "Use only IPv4 address.");
+        ipv4Option.AddAlias("-4");
 
-        [Option(Description = "Delay between connection attempts, in ms. Default: 100 ms.")]
-        // ReSharper disable once UnassignedGetOnlyAutoProperty
-        private static int? Delay { get; }
-
-        [Argument(0, Description = "Host name to initiate connection attempts with")]
-        // ReSharper disable once UnassignedGetOnlyAutoProperty
-        private static string HostName { get; }
-
-        [Argument(1, Description = "port numbers to initiate connections to")]
-        // ReSharper disable once UnassignedGetOnlyAutoProperty
-        private static int[] Ports { get; }
-
-        // ReSharper disable once UnusedMember.Local
-#pragma warning disable S1144
-        private static int OnExecute()
-#pragma warning enable S1144
+        Option<int> delayOption =
+            new(
+                "--delay",
+                () => 100,
+                "Delay between issuing port-knocking sequences, in ms."
+            );
+        delayOption.AddAlias("-d");
+        delayOption.AddValidator(result =>
         {
-            int delay = Delay ?? 100;
-
-            if (HostName == null)
+            if (result.GetValueForOption(delayOption) == 0)
             {
-                Console.Error.WriteLine("No hostname is given.");
-                return 1;
+                result.ErrorMessage = "The delay must be greater than 0.";
+            }
+        });
+        Argument<string> hostArgument =
+            new("hostname", "The name of the host to port-knock to.");
+        hostArgument.AddValidator(result =>
+        {
+            if (result.GetValueForArgument(hostArgument) == string.Empty)
+            {
+                result.ErrorMessage = "The host name cannot be empty";
+            }
+        });
+        Argument<ushort[]> portsArgument =
+            new("ports", "The ports to port-knock.");
+        portsArgument.AddValidator(result =>
+        {
+            var value = result.GetValueForArgument(portsArgument);
+            if (value.Length == 0)
+            {
+                result.ErrorMessage = "At least one port should be specified.";
+                return;
             }
 
-            if (Ports == null)
+            if (value.Any(p => p == 0))
             {
-                Console.Error.WriteLine("At least one port must be given.");
-                return 1;
+                result.ErrorMessage = "A port number cannot be 0.";
             }
+        });
 
-            IPHostEntry hosts;
-
-            try
+        RootCommand rootCommand =
+            new()
             {
-                hosts = Dns.GetHostEntry(HostName);
-            }
-            catch (SocketException)
+                verboseOption,
+                ipv4Option,
+                delayOption,
+                hostArgument,
+                portsArgument,
+            };
+        rootCommand.SetHandler(
+            (verbose, ipv4, delay, hostName, ports) =>
             {
-                Console.Error.WriteLine($"Cannot resolve '{HostName}'.");
-                return 1;
-            }
-
-            if (hosts.AddressList.Length == 0)
-            {
-                Console.Error.WriteLine($"Cannot resolve '{HostName}'.");
-                return 1;
-            }
-
-            var address = hosts.AddressList[0];
-            if (Verbose)
-            {
-                Console.WriteLine($"Port-knocking {address}...");
-            }
-
-            foreach (var port in Ports)
-            {
-                var sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                IPEndPoint endPoint = new IPEndPoint(hosts.AddressList[0], port);
-                if (Verbose)
+                var lc = new LoggerConfiguration();
+                if (verbose)
                 {
-                    Console.WriteLine($"Knock-knock, port {port}!");
+                    lc.MinimumLevel.Verbose();
                 }
-                sock.BeginConnect(endPoint, res => { }, sock);
-                sock.Close();
-                Thread.CurrentThread.Join(delay);
+                else
+                {
+                    lc.MinimumLevel.Warning();
+                }
+
+                var log = lc.WriteTo.Console().CreateLogger();
+                log.Verbose("The port-knocker is started.");
+                log.Verbose(
+                    $"Options and arguments: verbose {verbose} ipv4 {ipv4}, "
+                        + $"delay {delay}ms, hostname {hostName}, "
+                        + $"ports {string.Join(',', ports)}."
+                );
+
+                log.Debug($"Resolving {hostName}...");
+                var address = GetAddress(hostName, ipv4, log);
+
+                log.Debug($"Got {address} for {hostName}.");
+                foreach (var port in ports)
+                {
+                    var sock = new Socket(
+                        address.AddressFamily,
+                        SocketType.Stream,
+                        ProtocolType.Tcp
+                    );
+                    IPEndPoint endPoint = new(address, port);
+
+                    log.Verbose($"Knock-knock, port {port}!");
+
+                    sock.BeginConnect(endPoint, _ => { }, sock);
+                    sock.Close();
+                    Thread.CurrentThread.Join(delay);
+                }
+            },
+            verboseOption,
+            ipv4Option,
+            delayOption,
+            hostArgument,
+            portsArgument
+        );
+
+        rootCommand.Invoke(args);
+        Environment.Exit(0);
+    }
+
+    private static IPAddress GetAddress(string host, bool ipv4Only, Logger log)
+    {
+        IPHostEntry hosts = new();
+        try
+        {
+            hosts = Dns.GetHostEntry(host);
+        }
+        catch (SocketException)
+        {
+            log.Error($"Cannot resolve '{host}'.");
+            Environment.Exit(-1);
+        }
+
+        if (hosts.AddressList.Length == 0)
+        {
+            log.Error($"Address list for '{host}' is empty.");
+            Environment.Exit(-1);
+        }
+
+        foreach (var ipaddr in hosts.AddressList)
+        {
+            if (ipv4Only && ipaddr.AddressFamily != AddressFamily.InterNetwork)
+            {
+                log.Debug($"Skipping non-IPv4 address {ipaddr}");
+                continue;
             }
 
-            return 0;
+            log.Debug($"Found address {ipaddr}");
+            return ipaddr;
         }
+
+        throw new System.Diagnostics.UnreachableException();
     }
 }

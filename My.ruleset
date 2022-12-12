@@ -1,0 +1,13 @@
+<RuleSet Name="My rules" ToolsVersion="10.0">
+    <Rules AnalyzerId="StyleCop.Analyzers"
+           RuleNamespace="StyleCop.Analyzers">
+        <!-- File must have header -->
+        <Rule Id="SA1633" Action="None"/>
+        <!-- Closing parenthesis should not be preceded by a space -->
+        <Rule Id="SA1009" Action="None"/>
+        <!--  Closing parenthesis should be on line of last parameter -->
+        <Rule Id="SA1111" Action="None"/>
+        <!-- XML comment analysis is disabled due to project configuration -->
+        <Rule Id="SA0001" Action="None"/>
+    </Rules>
+</RuleSet>
