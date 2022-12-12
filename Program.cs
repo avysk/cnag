@@ -51,15 +51,10 @@ public static class Program
         });
         Argument<ushort[]> portsArgument =
             new("ports", "The ports to port-knock.");
+        portsArgument.Arity = ArgumentArity.OneOrMore;
         portsArgument.AddValidator(result =>
         {
             var value = result.GetValueForArgument(portsArgument);
-            if (value.Length == 0)
-            {
-                result.ErrorMessage = "At least one port should be specified.";
-                return;
-            }
-
             if (value.Any(p => p == 0))
             {
                 result.ErrorMessage = "A port number cannot be 0.";
