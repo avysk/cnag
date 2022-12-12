@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>cnag</ToolCommandName>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <Copyright>2020, 2022, Alexey Vyskubov alexey@hotmail.fi</Copyright>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
     <Title>CNAG: port-knocker utility</Title>

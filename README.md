@@ -7,7 +7,8 @@ programs such as [knockd](https://github.com/jvinet/knock/). The tool is
 very simple and can perform only TCP/SYN knocks over IPv4 or IPv6.
 
 **While the tool is written in .NET 7, I have tested it only on Windows. It may
-or may not work under Linux and/or macOs.**
+or may not work under Linux and/or macOs.** It seems to work for me on FreeBSD
+13.1.
 
 ## Installation
 

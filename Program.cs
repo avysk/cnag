@@ -88,8 +88,10 @@ public static class Program
                 var log = lc.WriteTo.Console().CreateLogger();
                 log.Verbose("The port-knocker is started.");
                 log.Verbose(
-                    $"Options and arguments: verbose {verbose} ipv4 {ipv4}, "
-                        + $"delay {delay}ms, hostname {hostName}, "
+                    $"Options and arguments: verbose {verbose}, "
+                        + $"ipv4 {ipv4}, "
+                        + $"delay {delay}ms, "
+                        + $"hostname {hostName}, "
                         + $"ports {string.Join(',', ports)}."
                 );
 
@@ -155,6 +157,8 @@ public static class Program
             return ipaddr;
         }
 
-        throw new System.Diagnostics.UnreachableException();
+        log.Error($"Cannot find IPv4 address for {host}.");
+        Environment.Exit(-1);
+        return null; // unreachable
     }
 }
