@@ -3,20 +3,20 @@
 ## Purpose
 
 This tool allows to issue "port-knocking" sequence for communicating with
-programs such as [knockd](https://zeroflux.org/projects/knock). The tool is
-very simple and can perform only TCP/SYN knocks over IPv4.
+programs such as [knockd](https://github.com/jvinet/knock/). The tool is
+very simple and can perform only TCP/SYN knocks over IPv4 or IPv6.
 
-**While the tool is written in .NET Core, I have tested it only on Windows. It may or may not work under Linux and/or macOs.**
+**While the tool is written in .NET 7, I have tested it only on Windows. It may
+or may not work under Linux and/or macOs.**
 
 ## Installation
 
-[.NET Core Runtime](https://docs.microsoft.com/en-us/dotnet/core/install/runtime) is required.
+[.NET 7 Runtime is required.](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) is required.
 
-To install `cnag` run
+To install: `dotnet tool install --global cnag`
 
-`dotnet tool install --global cnag`
-
-You can also compile it from the source which is available at https://github.com/avysk/cnag.
+You can also compile it from the source which is available
+[in the repository.](https://github.com/avysk/cnag)
 
 ## Usage
 
@@ -24,11 +24,14 @@ You can also compile it from the source which is available at https://github.com
 
 You can specify optional delay (in ms) between connection attempts using `-d <delay>` option; the default value is 100 ms.
 
-The tool is silent by default; add `-v` option for some verbosity.
+The tool is silent by default; add `--verbose` option if you wish to see a lot
+of messages.
+
+The parameter `-4` allows to force IPv4 usage (by ignoring IPv6 addresses).
 
 ## License: BSD 2-clause
 
-Copyright 2020 Alexey Vyskubov <alexey@hotmail.fi>
+Copyright 2020, 2022 Alexey Vyskubov <alexey@hotmail.fi>
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
