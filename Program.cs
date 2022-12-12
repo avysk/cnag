@@ -50,8 +50,10 @@ public static class Program
             }
         });
         Argument<ushort[]> portsArgument =
-            new("ports", "The ports to port-knock.");
-        portsArgument.Arity = ArgumentArity.OneOrMore;
+            new("ports", "The ports to port-knock.")
+            {
+                Arity = ArgumentArity.OneOrMore,
+            };
         portsArgument.AddValidator(result =>
         {
             var value = result.GetValueForArgument(portsArgument);
