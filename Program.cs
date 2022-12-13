@@ -1,13 +1,13 @@
 namespace Cnag;
 
+using Serilog;
+using Serilog.Core;
 using System;
 using System.CommandLine;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Serilog;
-using Serilog.Core;
 
 /// <summary>
 /// The program itself.
@@ -44,7 +44,7 @@ public static class Program
             new("hostname", "The name of the host to port-knock to.");
         hostArgument.AddValidator(result =>
         {
-            if (result.GetValueForArgument(hostArgument) == string.Empty)
+            if (result.GetValueForArgument(hostArgument)?.Length == 0)
             {
                 result.ErrorMessage = "The host name cannot be empty";
             }
@@ -56,7 +56,7 @@ public static class Program
             };
         portsArgument.AddValidator(result =>
         {
-            var value = result.GetValueForArgument(portsArgument);
+            ushort[] value = result.GetValueForArgument(portsArgument);
             if (value.Any(p => p == 0))
             {
                 result.ErrorMessage = "A port number cannot be 0.";
@@ -85,7 +85,7 @@ public static class Program
                     lc.MinimumLevel.Warning();
                 }
 
-                var log = lc.WriteTo.Console().CreateLogger();
+                Logger log = lc.WriteTo.Console().CreateLogger();
                 log.Verbose("The port-knocker is started.");
                 log.Verbose(
                     $"Options and arguments: verbose {verbose}, "
@@ -96,7 +96,7 @@ public static class Program
                 );
 
                 log.Debug($"Resolving {hostName}...");
-                var address = GetAddress(hostName, ipv4, log);
+                IPAddress address = GetAddress(hostName, ipv4, log);
 
                 log.Debug($"Got {address} for {hostName}.");
                 foreach (var port in ports)
