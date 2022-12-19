@@ -1,5 +1,11 @@
 # CNAG: simplistic port knocker
 
+
+![GitHub](https://img.shields.io/github/license/avysk/cnag?style=for-the-badge)
+![Nuget](https://img.shields.io/nuget/v/cnag?style=for-the-badge)
+
+
+
 ## Purpose
 
 This tool allows to issue "port-knocking" sequence for communicating with
