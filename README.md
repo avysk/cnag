@@ -6,6 +6,10 @@
 ![Nuget](https://badgen.net/nuget/dt/cnag?scale=1.2)
 ![Latest tag](https://badgen.net/github/tag/avysk/cnag?scale=1.2)
 
+If badges do not work, badgen is crashing.
+
+![Error from badgen.net](badgen.png)
+
 ## Purpose
 
 This tool allows to issue "port-knocking" sequence for communicating with
