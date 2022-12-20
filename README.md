@@ -1,4 +1,4 @@
-# CNAG: simplistic port knocker
+# CNAG: portable port knocker
 
 ![GitHub](https://img.shields.io/github/license/avysk/cnag?style=for-the-badge)
 ![Nuget](https://img.shields.io/nuget/v/cnag?style=for-the-badge)
