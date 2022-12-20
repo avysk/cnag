@@ -1,16 +1,13 @@
 # CNAG: simplistic port knocker
 
-
 ![GitHub](https://img.shields.io/github/license/avysk/cnag?style=for-the-badge)
 ![Nuget](https://img.shields.io/nuget/v/cnag?style=for-the-badge)
-
-
 
 ## Purpose
 
 This tool allows to issue "port-knocking" sequence for communicating with
 programs such as [knockd](https://github.com/jvinet/knock/). The tool is
-very simple and can perform only TCP/SYN knocks over IPv4 or IPv6.
+very simple and can perform only TCP/SYN knocks over IPv4 or IPv6 -- and maybe UDP knocks as well.
 
 **While the tool is written in .NET 6, I have tested it only on Windows. It may
 or may not work under Linux and/or macOs.** It seems to work for me on FreeBSD
@@ -33,5 +30,7 @@ You can specify optional delay (in ms) between connection attempts using `-d <de
 
 The tool is silent by default; add `--verbose` option if you wish to see a lot
 of messages.
+
+The parameter `-u` (stands for _untested_) switches to UDP mode.
 
 The parameter `-4` allows to force IPv4 usage (by ignoring IPv6 addresses).

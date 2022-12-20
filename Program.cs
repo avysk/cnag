@@ -1,13 +1,14 @@
-namespace Cnag;
-
 using Serilog;
 using Serilog.Core;
+
 using System;
 using System.CommandLine;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+
+namespace Cnag;
 
 /// <summary>
 /// The program itself.
@@ -25,6 +26,9 @@ public static class Program
 
         Option<bool> ipv4Option = new("--ipv4", "Use only IPv4 address.");
         ipv4Option.AddAlias("-4");
+
+        Option<bool> udpOption = new("--udp", "Use UDP for knocking.");
+        udpOption.AddAlias("-u");
 
         Option<int> delayOption =
             new(
@@ -52,11 +56,11 @@ public static class Program
         Argument<ushort[]> portsArgument =
             new("ports", "The ports to port-knock.")
             {
-                Arity = ArgumentArity.OneOrMore,
+                Arity = ArgumentArity.OneOrMore
             };
         portsArgument.AddValidator(result =>
         {
-            ushort[] value = result.GetValueForArgument(portsArgument);
+            var value = result.GetValueForArgument(portsArgument);
             if (value.Any(p => p == 0))
             {
                 result.ErrorMessage = "A port number cannot be 0.";
@@ -68,28 +72,27 @@ public static class Program
             {
                 verboseOption,
                 ipv4Option,
+                udpOption,
                 delayOption,
                 hostArgument,
-                portsArgument,
+                portsArgument
             };
         rootCommand.SetHandler(
-            (verbose, ipv4, delay, hostName, ports) =>
+            (verbose, ipv4, udp, delay, hostName, ports) =>
             {
                 var lc = new LoggerConfiguration();
-                if (verbose)
-                {
-                    lc.MinimumLevel.Verbose();
-                }
-                else
-                {
-                    lc.MinimumLevel.Warning();
-                }
+                _ = verbose
+                    ? lc.MinimumLevel.Verbose()
+                    : lc.MinimumLevel.Warning();
 
+#pragma warning disable CA1305
                 Logger log = lc.WriteTo.Console().CreateLogger();
+#pragma warning restore CA1305
                 log.Verbose("The port-knocker is started.");
                 log.Verbose(
                     $"Options and arguments: verbose {verbose}, "
                         + $"ipv4 {ipv4}, "
+                        + $"udp {udp}, "
                         + $"delay {delay}ms, "
                         + $"hostname {hostName}, "
                         + $"ports {string.Join(',', ports)}."
@@ -98,31 +101,39 @@ public static class Program
                 log.Debug($"Resolving {hostName}...");
                 IPAddress address = GetAddress(hostName, ipv4, log);
 
+                SocketType socketType = udp
+                    ? SocketType.Dgram
+                    : SocketType.Stream;
+                ProtocolType protocolType = udp
+                    ? ProtocolType.Udp
+                    : ProtocolType.Tcp;
+
                 log.Debug($"Got {address} for {hostName}.");
                 foreach (var port in ports)
                 {
                     var sock = new Socket(
                         address.AddressFamily,
-                        SocketType.Stream,
-                        ProtocolType.Tcp
+                        socketType,
+                        protocolType
                     );
                     IPEndPoint endPoint = new(address, port);
 
                     log.Verbose($"Knock-knock, port {port}!");
 
-                    sock.BeginConnect(endPoint, _ => { }, sock);
+                    _ = sock.BeginConnect(endPoint, _ => { }, sock);
                     sock.Close();
-                    Thread.CurrentThread.Join(delay);
+                    _ = Thread.CurrentThread.Join(delay);
                 }
             },
             verboseOption,
             ipv4Option,
+            udpOption,
             delayOption,
             hostArgument,
             portsArgument
         );
 
-        rootCommand.Invoke(args);
+        _ = rootCommand.Invoke(args);
         Environment.Exit(0);
     }
 
@@ -145,7 +156,7 @@ public static class Program
             Environment.Exit(-1);
         }
 
-        foreach (var ipaddr in hosts.AddressList)
+        foreach (IPAddress ipaddr in hosts.AddressList)
         {
             if (ipv4Only && ipaddr.AddressFamily != AddressFamily.InterNetwork)
             {
