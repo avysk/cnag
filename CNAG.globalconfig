@@ -1,0 +1,11 @@
+is_global = true
+
+dotnet_analyzer_diagnostic.category-Style.severity = warning
+# I want 'this'
+dotnet_diagnostic.IDE0003.severity = none
+# No block-scoped namespaces
+dotnet_diagnostic.IDE0160.severity = none
+
+csharp_style_var_for_built_in_types = true:warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = false:warning
