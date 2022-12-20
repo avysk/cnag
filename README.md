@@ -3,6 +3,8 @@
 ![GitHub](https://img.shields.io/github/license/avysk/cnag?style=for-the-badge)
 ![Nuget](https://img.shields.io/nuget/v/cnag?style=for-the-badge)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/avysk/cnag/dotnet-build.yml?branch=%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80&style=for-the-badge)
+![Nuget](https://img.shields.io/nuget/dt/cnag?style=for-the-badge)
+![Latest tag](https://badgen.net/github/tag/avysk/cnag?scale=2{)
 
 ## Purpose
 
