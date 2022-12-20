@@ -2,7 +2,8 @@
 
 ![License](https://badgen.net/github/license/avysk/cnag?color=green&scale=1.2)
 
-![GitHub Workflow Status](https://badgen.net/github/actions/workflow/status/avysk/cnag/dotnet-build.yml?branch=%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80scale=1.2)
+![GitHub Workflow Status](https://badgen.net/github/checks/avysk/cnag/%D0%BC%D0%B0%D1%81%D1%82%D0%B5%D1%80/build?label=build&scale=1.2)
+
 ![Latest tag](https://badgen.net/github/tag/avysk/cnag?scale=1.2)
 ![Nuget](https://badgen.net/nuget/v/cnag?scale=1.2)
 ![Nuget downloads](https://badgen.net/nuget/dt/cnag?scale=1.2)
