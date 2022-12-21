@@ -13,7 +13,7 @@
     <Description>This tool allows to issue "port-knocking" sequence for communicating with programs such as knockd.</Description>
     <Pack>true</Pack>
     <RepositoryUrl>https://github.com/avysk/cnag</RepositoryUrl>
-    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryBranch>мастер</RepositoryBranch>
     <PackageReadmeFile>docs.md</PackageReadmeFile>
     <AnalysisMode>All</AnalysisMode>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

@@ -109,7 +109,7 @@ public static class Program
                     : ProtocolType.Tcp;
 
                 log.Debug($"Got {address} for {hostName}.");
-                foreach (var port in ports)
+                foreach (ushort port in ports)
                 {
                     var sock = new Socket(
                         address.AddressFamily,
