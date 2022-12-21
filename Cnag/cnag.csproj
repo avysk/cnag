@@ -17,6 +17,7 @@
     <PackageReadmeFile>docs.md</PackageReadmeFile>
     <AnalysisMode>All</AnalysisMode>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PackageTags>port-knocker;port-knocking;knock;knockd</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
